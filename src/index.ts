@@ -10,7 +10,6 @@ import { getDescriptor } from './utils/descriptorCache'
 import { transformStyle } from './style'
 import { ViteDevServer, Plugin } from 'vite'
 import { SFCBlock } from '@vue/component-compiler-utils'
-import { handleHotUpdate } from './hmr'
 import { transformVueJsx } from './jsxTransform'
 
 export const vueComponentNormalizer = '\0/vite/vueComponentNormalizer'
@@ -54,7 +53,7 @@ export interface ResolvedOptions extends VueViteOptions {
   target?: string | string[]
 }
 
-export function createVuePlugin(rawOptions: VueViteOptions = {}): Plugin {
+export function createVuePlugin (rawOptions: VueViteOptions = {}): Plugin {
   const options: ResolvedOptions = {
     isProduction: process.env.NODE_ENV === 'production',
     ...rawOptions,
@@ -66,7 +65,7 @@ export function createVuePlugin(rawOptions: VueViteOptions = {}): Plugin {
   return {
     name: 'vite-plugin-vue2',
 
-    config(config) {
+    config (config) {
       if (options.jsx) {
         return {
           esbuild: {
@@ -77,23 +76,29 @@ export function createVuePlugin(rawOptions: VueViteOptions = {}): Plugin {
       }
     },
 
-    handleHotUpdate(ctx) {
-      if (!filter(ctx.file)) {
-        return
-      }
-      return handleHotUpdate(ctx, options)
+    handleHotUpdate (ctx) {
+      // console.log('---handleHotUpdate---', ctx.file, ctx.modules.map(it => it.acceptedHmrDeps))
+      // 返回空数组  是不处理热更新
+      // 返回undefined  是默认行为 依据ctx.module处理?
+      return
+
+      // 旧代码，只处理vue的热更新
+      // if (!filter(ctx.file)) {
+      //   return
+      // }
+      // return handleHotUpdate(ctx, options)
     },
 
-    configResolved(config) {
+    configResolved (config) {
       options.isProduction = config.isProduction
       options.root = config.root
     },
 
-    configureServer(server) {
+    configureServer (server) {
       options.devServer = server
     },
 
-    async resolveId(id) {
+    async resolveId (id) {
       if (id === vueComponentNormalizer || id === vueHotReload) {
         return id
       }
@@ -103,7 +108,7 @@ export function createVuePlugin(rawOptions: VueViteOptions = {}): Plugin {
       }
     },
 
-    load(id) {
+    load (id) {
       if (id === vueComponentNormalizer) {
         return normalizeComponentCode
       }
@@ -115,6 +120,7 @@ export function createVuePlugin(rawOptions: VueViteOptions = {}): Plugin {
       const { filename, query } = parseVueRequest(id)
       // select corresponding block for subpart virtual modules
       if (query.vue) {
+        // 处理vue的虚拟文件
         if (query.src) {
           return fs.readFileSync(filename, 'utf-8')
         }
@@ -139,18 +145,21 @@ export function createVuePlugin(rawOptions: VueViteOptions = {}): Plugin {
       }
     },
 
-    async transform(code, id, transformOptions) {
+    async transform (code, id, transformOptions) {
       const { filename, query } = parseVueRequest(id)
 
       if (/\.(tsx|jsx)$/.test(id)) {
-        return transformVueJsx(code, id, options.jsxOptions)
+        // TSX进入该逻辑
+        return transformVueJsx(code, id, options)
       }
 
       if ((!query.vue && !filter(filename)) || query.raw) {
+        // 默认文件进入该逻辑
         return
       }
 
       if (!query.vue) {
+        // 在transformMain 中 vue文件会被分成 template 、script 、style等几个不同的 虚拟模块
         // main request
         return await transformMain(code, filename, options, this)
       }

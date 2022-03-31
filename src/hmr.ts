@@ -2,7 +2,6 @@ import _debug from 'debug'
 import {
   createDescriptor,
   getDescriptor,
-  setPrevDescriptor,
 } from './utils/descriptorCache'
 import { ModuleNode, HmrContext } from 'vite'
 import { isCSSRequest } from './utils/css'
@@ -14,7 +13,7 @@ const debug = _debug('vite:hmr')
 /**
  * Vite-specific HMR handling
  */
-export async function handleHotUpdate(
+export async function handleHotUpdate (
   { file, modules, read, server }: HmrContext,
   options: ResolvedOptions
 ): Promise<ModuleNode[] | void> {
@@ -24,7 +23,6 @@ export async function handleHotUpdate(
     return
   }
 
-  setPrevDescriptor(file, prevDescriptor)
 
   const content = await read()
   const descriptor = createDescriptor(content, file, options)
@@ -132,7 +130,7 @@ export async function handleHotUpdate(
   return [...affectedModules].filter(Boolean) as ModuleNode[]
 }
 
-function isEqualBlock(a: SFCBlock | null, b: SFCBlock | null) {
+function isEqualBlock (a: SFCBlock | null, b: SFCBlock | null) {
   if (!a && !b) return true
   if (!a || !b) return false
   // src imports will trigger their own updates

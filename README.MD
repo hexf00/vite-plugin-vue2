@@ -2,6 +2,13 @@
 
 [![NPM version](https://img.shields.io/npm/v/vite-plugin-vue2?color=a1b858&label=)](https://www.npmjs.com/package/vite-plugin-vue2)
 
+
+## 修改说明
+
+添加了TSX的热更新，删除了Vue的热更新。
+
+仅供学习。
+
 ## Install
 
 ```bash

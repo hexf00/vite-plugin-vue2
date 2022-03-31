@@ -1,3 +1,4 @@
+// 注入到浏览器的代码
 export const vueHotReloadCode = `
 var Vue // late bind
 var version
@@ -5,6 +6,8 @@ var __VUE_HMR_RUNTIME__ = Object.create(null)
 var map = Object.create(null)
 if (typeof window !== 'undefined') {
 	window.__VUE_HMR_RUNTIME__ = __VUE_HMR_RUNTIME__
+
+	window.__HMR_TSX_DEBUG__ = false
 }
 var installed = false
 var isBrowserify = false
@@ -42,6 +45,7 @@ __VUE_HMR_RUNTIME__.install = function (vue, browserify) {
  */
 
 __VUE_HMR_RUNTIME__.createRecord = function (id, options) {
+	if(window.__HMR_TSX_DEBUG__) { console.log("createRecord",id,options) }
 	if(map[id]) { return }
 
 	var Ctor = null
@@ -140,6 +144,7 @@ function updateOptions (oldOptions, newOptions) {
 }
 
 __VUE_HMR_RUNTIME__.rerender = tryWrap(function (id, options) {
+	if(window.__HMR_TSX_DEBUG__) { 	console.log("rerender",id,options) }
 	var record = map[id]
 	if (!options) {
 		record.instances.slice().forEach(function (instance) {
@@ -222,6 +227,7 @@ __VUE_HMR_RUNTIME__.rerender = tryWrap(function (id, options) {
 })
 
 __VUE_HMR_RUNTIME__.reload = tryWrap(function (id, options) {
+	if(window.__HMR_TSX_DEBUG__) { console.log("reload",id,options) }
 	var record = map[id]
 	if (options) {
 		if (typeof options === 'function') {

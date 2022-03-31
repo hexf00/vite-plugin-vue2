@@ -6,9 +6,9 @@ import * as vueTemplateCompiler from 'vue-template-compiler'
 import { ResolvedOptions } from '../index'
 
 const cache = new Map<string, SFCDescriptor>()
-const prevCache = new Map<string, SFCDescriptor | undefined>()
+// const prevCache = new Map<string, SFCDescriptor | undefined>()
 
-export function createDescriptor(
+export function createDescriptor (
   source: string,
   filename: string,
   { root, isProduction, vueTemplateOptions }: ResolvedOptions
@@ -30,15 +30,15 @@ export function createDescriptor(
   return descriptor
 }
 
-export function getPrevDescriptor(filename: string) {
-  return prevCache.get(slash(filename))
-}
+// export function getPrevDescriptor(filename: string) {
+//   return prevCache.get(slash(filename))
+// }
 
-export function setPrevDescriptor(filename: string, entry: SFCDescriptor) {
-  prevCache.set(slash(filename), entry)
-}
+// export function setPrevDescriptor (filename: string, entry: SFCDescriptor) {
+//   prevCache.set(slash(filename), entry)
+// }
 
-export function getDescriptor(filename: string, errorOnMissing = true) {
+export function getDescriptor (filename: string, errorOnMissing = true) {
   const descriptor = cache.get(slash(filename))
   if (descriptor) {
     return descriptor
@@ -46,11 +46,11 @@ export function getDescriptor(filename: string, errorOnMissing = true) {
   if (errorOnMissing) {
     throw new Error(
       `${filename} has no corresponding SFC entry in the cache. ` +
-        `This is a vite-plugin-vue2 internal error, please open an issue.`
+      `This is a vite-plugin-vue2 internal error, please open an issue.`
     )
   }
 }
 
-export function setDescriptor(filename: string, entry: SFCDescriptor) {
+export function setDescriptor (filename: string, entry: SFCDescriptor) {
   cache.set(slash(filename), entry)
 }
