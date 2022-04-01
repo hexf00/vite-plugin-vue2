@@ -43,28 +43,35 @@ export function transformVueJsx (
   if (!className) {
     throw Error("错误的tsx，需要default 导出");
   }
-
-  return {
-    code: result.code +
-      `
-    /* normalize component */
-    import __vue2_normalizer from "${vueComponentNormalizer}"
-    var __component__ = /*#__PURE__*/__vue2_normalizer(
-    ${className},
-    null,
-    [],
-    false,
-    function(){},
-    null,
-    null,
-    null
-    )
-    `.trim() + `\n` + genHmrCode(
-        options.root,
-        id,
-        false
-      ) as string,
-    map: result.map as any,
+  if (options.devServer && !options.isProduction) {
+    return {
+      code: result.code +
+        `
+      /* normalize component */
+      import __vue2_normalizer from "${vueComponentNormalizer}"
+      var __component__ = /*#__PURE__*/__vue2_normalizer(
+      ${className},
+      null,
+      [],
+      false,
+      function(){},
+      null,
+      null,
+      null
+      )
+      `.trim() + `\n` + genHmrCode(
+          options.root,
+          id,
+          false
+        ) as string,
+      map: result.map as any,
+    }
+  } else {
+    // 生产环境不要hmr代码
+    return {
+      code: result.code,
+      map: result.map as any,
+    }
   }
 }
 
