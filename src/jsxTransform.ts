@@ -43,6 +43,14 @@ export function transformVueJsx (
   if (!className) {
     throw Error("错误的tsx，需要default 导出");
   }
+
+
+  // babel编译结果内不改名，无法递归访问
+  result.code = result.code?.replace(
+    /class ([a-zA-Z]+?) extends Vue {/,
+    'class extends Vue {'
+  );
+
   if (options.devServer && !options.isProduction) {
     return {
       code: result.code +
@@ -69,7 +77,7 @@ export function transformVueJsx (
   } else {
     // 生产环境不要hmr代码
     return {
-      code: result.code,
+      code: result.code || '',
       map: result.map as any,
     }
   }
