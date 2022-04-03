@@ -46,9 +46,10 @@ export function transformVueJsx (
 
 
   // babel编译结果内不改名，无法递归访问
+  // class name不能删除，是组件默认的名称所以暂时加个后缀
   result.code = result.code?.replace(
     /class ([a-zA-Z]+?) extends Vue {/,
-    'class extends Vue {'
+    'class $1C extends Vue {'
   );
 
   if (options.devServer && !options.isProduction) {
