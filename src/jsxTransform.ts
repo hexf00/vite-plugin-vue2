@@ -10,11 +10,12 @@ export function transformVueJsx (
 ) {
   const { jsxOptions } = options
   const plugins: any[] = [
-    [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
+    [require.resolve('@babel/plugin-proposal-decorators'), { version: "2021-12", decoratorsBeforeExport: true }],
+    require.resolve('@babel/plugin-proposal-class-static-block'),
     [
       require.resolve('@babel/plugin-proposal-class-properties'),
       { loose: true },
-    ],
+    ]
   ]
   if (/\.tsx$/.test(id)) {
     plugins.unshift([
@@ -45,12 +46,12 @@ export function transformVueJsx (
   }
 
 
-  // babel编译结果内不改名，无法递归访问
-  // class name不能删除，是组件默认的名称所以暂时加个后缀
-  result.code = result.code?.replace(
-    /class ([a-zA-Z]+?) extends Vue {/,
-    'class $1C extends Vue {'
-  );
+  // // babel编译结果内不改名，无法递归访问
+  // // class name不能删除，是组件默认的名称所以暂时加个后缀
+  // result.code = result.code?.replace(
+  //   /class ([a-zA-Z]+?) extends Vue {/,
+  //   'class $1C extends Vue {'
+  // );
 
   if (options.devServer && !options.isProduction) {
     return {
